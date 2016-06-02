@@ -25,6 +25,7 @@
   "files": [
     "./dev/app.component.ts",
     "./dev/boot.ts",
+    "./dev/calendar-service.ts",
     "./dev/date.component.ts",
     "./dev/Entry/entry-service.ts",
     "./dev/Entry/entry.ts",

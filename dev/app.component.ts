@@ -16,8 +16,9 @@ import {EntryService} from './Entry/entry-service';
             <div class="card" id="calendar">
                       <span id="hori"
                             (click)="dateSelect(no)"
-                            *ngFor="#no of day_nos">
-                          {{no}}
+                            *ngFor="#no of day_nos"
+                            [ngStyle]="focusDate(no)?{'color':'blue'}:{'color':'rgba(0,0,0,0.3)'}">
+                            {{no}}
                       </span>
             </div>
 
@@ -46,8 +47,10 @@ import {EntryService} from './Entry/entry-service';
 })
 export class AppComponent
 {
-  public day_nos=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42];
-  public viewInput = false;
+  public one_encountered=false;
+  public day_nos=[];
+  public days_in_month=[31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  public weekstartindex=null;
   public months=['January','Febuary','March','April','May','June','July','August','September','October','November','December'];
   public currentdate = null;
 
@@ -63,6 +66,8 @@ export class AppComponent
 
   constructor(private _entryservice : EntryService){
     this.currentdate = new Date();
+    this.weekstartindex = this.currentdate.getDay();
+    this.initialize();
   }
 
   public getday(){
@@ -74,19 +79,41 @@ export class AppComponent
   }
 
   onAddMore(){
-    this.viewInput = true;
   }
 
   onClick(value){
       if(value!=="")
       {
         this._entryservice.entries.push({post:value,status:false});
-        this.viewInput=false;
         console.log(this._entryservice.entries)
       }
   }
 
   public dateSelect(value){
     this.currentdate.setDate(value);
+  }
+
+  public focusDate(value){
+      if(value === 1) this.one_encountered = this.one_encountered ? false:true;
+      return this.one_encountered;
+  }
+
+  private initialize(){
+    var temp,current=1;
+    var firstDay = new Date(this.currentdate.getFullYear(),this.currentdate.getMonth(),1);
+    temp = this.days_in_month[this.currentdate.getMonth()-1];
+    for(var i=0;i<42;++i){
+        if(i<firstDay.getDay())
+        {
+            this.day_nos.unshift(temp);
+            temp-=1;
+        }
+        else
+        {
+            if(this.days_in_month[firstDay.getMonth()]+firstDay.getDay()===i) current=1;
+            this.day_nos.push(current);
+            current+=1;
+        }
+    }
   }
 }
